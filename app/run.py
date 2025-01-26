@@ -5,7 +5,6 @@ from utilities.error_decorator import exception_log
 
 # Logging Initialization
 import logging
-from utilities.log_utils import logger_init
 logger = logging.getLogger(__name__)
 
 import config

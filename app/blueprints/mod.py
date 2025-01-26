@@ -1,5 +1,4 @@
 from ieddit import *
-from jinja2 import escape
 import json
 
 bp = Blueprint('mod', 'mod', url_prefix='/mod')

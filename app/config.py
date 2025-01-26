@@ -1,6 +1,6 @@
 DEBUG = True
 
-SUB_PREFIX = '/i/'
+SUB_PREFIX = '/'
 
 # Database Name
 DATABASE = 'ieddit'
@@ -23,10 +23,10 @@ elif DB_TYPE == 'postgres':
 
 # This will be unique every time create_db.py is ran when testing
 # to force clear sessions
-SECRET_KEY = 'not-a-real-key-|r|Xuu4433Coj|r|'
+SECRET_KEY = 'not-a-real-key-|r|eFDBur8U8C|r|'
 
 # Change this to your local URL. IE http://127.0.0.1
-URL = 'http://dev.ieddit.com'
+URL = 'http://127.0.0.1'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 

@@ -18,8 +18,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.exceptions import HTTPException
 from flask_caching import Cache
 from flask_limiter import Limiter
-from flask_limiter.util import get_ipaddr
-from jinja2 import escape, Markup
+from flask_limiter.util import get_remote_address
 
 import requests
 
@@ -59,17 +58,17 @@ if (config.SENTRY_ENABLED):
     )
 
 
-db = SQLAlchemy(app)
-db.session.rollback()
+with app.app_context():
+    db = SQLAlchemy(app)
+    db.session.rollback()
 
 from models import *
 
 from db_functions import *
 
-
 limiter = Limiter(
-    app,
-    key_func=get_ipaddr,
+    get_remote_address,
+    app=app,
     default_limits=config.LIMITER_DEFAULTS
 )
 

@@ -58,121 +58,123 @@ with open('config.py', 'r+') as f:
     f.seek(0)
     f.write('|r|'.join(ctext))
 
-db.create_all()
-db.session.commit()
+with app.app_context():
 
-new_user = Iuser(username=config.TEST_USER_USERNAME, email=config.TEST_USER_EMAIL,
-    password=generate_password_hash(config.TEST_USER_PASSWORD))
-db.session.add(new_user)
-db.session.commit()
+    db.create_all()
+    db.session.commit()
 
-new_user = Iuser(username='Anonymous', email='test@test.com',
-    password=generate_password_hash('test'))
-db.session.add(new_user)
-db.session.commit()
-
-new_user = Iuser(username=config.TEST_ADMIN_USERNAME, email=config.TEST_ADMIN_EMAIL,
-    password=generate_password_hash(config.TEST_ADMIN_PASSWORD), admin=True, anonymous=True)
-db.session.add(new_user)
-db.session.commit()
-
-for i in range(20):
-    new_user = Iuser(username=rstring(3,10), email= rstring(4) + '@test.com',
-    password=generate_password_hash('test'))
+    new_user = Iuser(username=config.TEST_USER_USERNAME, email=config.TEST_USER_EMAIL,
+        password=generate_password_hash(config.TEST_USER_PASSWORD))
     db.session.add(new_user)
-db.session.commit()
+    db.session.commit()
 
-new_sub = Sub(name='test', created_by=config.TEST_USER_USERNAME, created_by_id=1, title='for testing')
-db.session.add(new_sub)
-db.session.commit()
+    new_user = Iuser(username='Anonymous', email='test@test.com',
+        password=generate_password_hash('test'))
+    db.session.add(new_user)
+    db.session.commit()
 
-new_mod = Moderator(username=config.TEST_USER_USERNAME, sub='test')
-db.session.add(new_mod)
-db.session.commit()
+    new_user = Iuser(username=config.TEST_ADMIN_USERNAME, email=config.TEST_ADMIN_EMAIL,
+        password=generate_password_hash(config.TEST_ADMIN_PASSWORD), admin=True, anonymous=True)
+    db.session.add(new_user)
+    db.session.commit()
 
-for i in range(10):
-    new_sub = Sub(name=rstring(3, 10), created_by=config.TEST_USER_USERNAME, created_by_id=1)
+    for i in range(20):
+        new_user = Iuser(username=rstring(3,10), email= rstring(4) + '@test.com',
+        password=generate_password_hash('test'))
+        db.session.add(new_user)
+    db.session.commit()
+
+    new_sub = Sub(name='test', created_by=config.TEST_USER_USERNAME, created_by_id=1, title='for testing')
     db.session.add(new_sub)
     db.session.commit()
-    new_mod = Moderator(username=new_sub.created_by, sub=new_sub.name)
+
+    new_mod = Moderator(username=config.TEST_USER_USERNAME, sub='test')
     db.session.add(new_mod)
     db.session.commit()
 
-new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'),
- author=config.TEST_USER_USERNAME, author_id=1, sub='test', ups=randint(100,200), downs=randint(1,5), post_type='url', 
- author_type='mod', stickied=True)
-db.session.add(new_post)
-db.session.commit()
-new_post.permalink =  new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
-db.session.commit()
-test_perma = new_post.permalink
-fp = new_post
+    for i in range(10):
+        new_sub = Sub(name=rstring(3, 10), created_by=config.TEST_USER_USERNAME, created_by_id=1)
+        db.session.add(new_sub)
+        db.session.commit()
+        new_mod = Moderator(username=new_sub.created_by, sub=new_sub.name)
+        db.session.add(new_mod)
+        db.session.commit()
 
-for i in range(50):
-    title = fake.text()[:randint(10,200)]
-    new_post = Post(url='https://google.com/' + rstring(5, 10), title=title, inurl_title=convert_ied(title), 
-        author=config.TEST_USER_USERNAME, author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='url', author_type='mod')
+    new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'),
+    author=config.TEST_USER_USERNAME, author_id=1, sub='test', ups=randint(100,200), downs=randint(1,5), post_type='url', 
+    author_type='mod', stickied=True)
     db.session.add(new_post)
     db.session.commit()
-    new_post.created = new_post.created - timedelta(days=randint(0,8))
     new_post.permalink =  new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
     db.session.commit()
-for i in range(50):
-    title = fake.text()[:randint(10,200)]
-    new_post = Post(title=title, inurl_title=convert_ied(title), self_text=pseudo_markup(fake.text(2000))[:randint(500,2000)],
-        author=config.TEST_USER_USERNAME, author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='self_post', author_type='mod')
-    db.session.add(new_post)
+    test_perma = new_post.permalink
+    fp = new_post
+
+    for i in range(50):
+        title = fake.text()[:randint(10,200)]
+        new_post = Post(url='https://google.com/' + rstring(5, 10), title=title, inurl_title=convert_ied(title), 
+            author=config.TEST_USER_USERNAME, author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='url', author_type='mod')
+        db.session.add(new_post)
+        db.session.commit()
+        new_post.created = new_post.created - timedelta(days=randint(0,8))
+        new_post.permalink =  new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
+        db.session.commit()
+    for i in range(50):
+        title = fake.text()[:randint(10,200)]
+        new_post = Post(title=title, inurl_title=convert_ied(title), self_text=pseudo_markup(fake.text(2000))[:randint(500,2000)],
+            author=config.TEST_USER_USERNAME, author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='self_post', author_type='mod')
+        db.session.add(new_post)
+        db.session.commit()
+        new_post.created = new_post.created - timedelta(days=randint(0,8))
+        new_post.permalink =  new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
+        db.session.commit()
+
     db.session.commit()
-    new_post.created = new_post.created - timedelta(days=randint(0,8))
-    new_post.permalink =  new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
-    db.session.commit()
 
-db.session.commit()
-
-new_comment = Comment(post_id=1, sub_name='test', text='this is comment text', author=config.TEST_USER_USERNAME, author_id=1, ups=randint(1,20), downs=randint(1,5),
-                    author_type='mod')
-db.session.add(new_comment)
-db.session.commit()
-
-post = db.session.query(Post).filter_by(id=1).first()
-new_comment.permalink = post.permalink + str(new_comment.id)
-db.session.commit()
-
-new_comment = Comment(post_id=1, sub_name='test', text='this is a reply', author=config.TEST_USER_USERNAME, author_id=1, parent_id=1, ups=randint(1,20),
-                downs=randint(1,5), author_type='mod')
-db.session.add(new_comment)
-db.session.commit()
-
-post = db.session.query(Post).filter_by(id=1).first()
-new_comment.permalink = post.permalink + str(new_comment.id)
-db.session.commit()
-
-comments = list(Comment.query.all())
-
-for i in range(200):
-    if choice([x for x in range(3)]) == 0:
-        pid = None
-        level = None
-    else:
-        rancom = choice(comments)
-        pid = rancom.id
-        level = rancom.level + 1
-    new_comment = Comment(post_id=1, sub_name='test', text=pseudo_markup(fake.text()[:randint(1,200)]),  author=config.TEST_USER_USERNAME, author_id=1,
-      parent_id=pid, level=level, ups=randint(1,20), downs=randint(1,5), author_type='mod')
+    new_comment = Comment(post_id=1, sub_name='test', text='this is comment text', author=config.TEST_USER_USERNAME, author_id=1, ups=randint(1,20), downs=randint(1,5),
+                        author_type='mod')
     db.session.add(new_comment)
     db.session.commit()
+
     post = db.session.query(Post).filter_by(id=1).first()
     new_comment.permalink = post.permalink + str(new_comment.id)
-    db.session.commit()    
-    comments.append(new_comment)
+    db.session.commit()
 
-new_message = Message(sent_to=config.TEST_ADMIN_USERNAME, sender=config.TEST_USER_USERNAME, title='this is a title', text='this is text')
-db.session.add(new_message)
-db.session.commit()
+    new_comment = Comment(post_id=1, sub_name='test', text='this is a reply', author=config.TEST_USER_USERNAME, author_id=1, parent_id=1, ups=randint(1,20),
+                    downs=randint(1,5), author_type='mod')
+    db.session.add(new_comment)
+    db.session.commit()
 
-new_message = Message(sent_to=config.TEST_ADMIN_USERNAME, sender=config.TEST_USER_USERNAME, title='this is a title', text='this is text', in_reply_to=fp.permalink)
-db.session.add(new_message)
-db.session.commit()
+    post = db.session.query(Post).filter_by(id=1).first()
+    new_comment.permalink = post.permalink + str(new_comment.id)
+    db.session.commit()
+
+    comments = list(Comment.query.all())
+
+    for i in range(200):
+        if choice([x for x in range(3)]) == 0:
+            pid = None
+            level = None
+        else:
+            rancom = choice(comments)
+            pid = rancom.id
+            level = rancom.level + 1
+        new_comment = Comment(post_id=1, sub_name='test', text=pseudo_markup(fake.text()[:randint(1,200)]),  author=config.TEST_USER_USERNAME, author_id=1,
+        parent_id=pid, level=level, ups=randint(1,20), downs=randint(1,5), author_type='mod')
+        db.session.add(new_comment)
+        db.session.commit()
+        post = db.session.query(Post).filter_by(id=1).first()
+        new_comment.permalink = post.permalink + str(new_comment.id)
+        db.session.commit()    
+        comments.append(new_comment)
+
+    new_message = Message(sent_to=config.TEST_ADMIN_USERNAME, sender=config.TEST_USER_USERNAME, title='this is a title', text='this is text')
+    db.session.add(new_message)
+    db.session.commit()
+
+    new_message = Message(sent_to=config.TEST_ADMIN_USERNAME, sender=config.TEST_USER_USERNAME, title='this is a title', text='this is text', in_reply_to=fp.permalink)
+    db.session.add(new_message)
+    db.session.commit()
 
 
-db.session.commit()
+    db.session.commit()
